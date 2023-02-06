@@ -11,7 +11,8 @@
     "start:dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/index.js\"",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "husky:prepare": "husky install"
+    "husky:prepare": "husky install",
+    "swagger:gen": "node src/swagger.ts"
   },
   "dependencies": {
     "@prisma/client": "^4.9.0",
@@ -21,7 +22,9 @@
     "express": "^4.18.2",
     "express-validator": "^6.14.3",
     "jsonwebtoken": "^9.0.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "swagger-autogen": "^2.23.0",
+    "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",

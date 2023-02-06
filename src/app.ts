@@ -9,6 +9,8 @@ import express, {
 import cors from 'cors';
 import morgan from 'morgan';
 import { authRouter, userRouter } from './routes';
+import swaggerUi from 'swagger-ui-express';
+import swaggerFile from './swagger_output.json';
 
 const app: Application = express();
 
@@ -24,6 +26,8 @@ app.use('/api/v1/user', userRouter);
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Auth Service up!!' });
 });
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.all('*', (req, res) => {
   res.status(404).json({
