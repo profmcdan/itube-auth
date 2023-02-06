@@ -1,0 +1,11 @@
+.yarn
+dist
+node_modules/
+*.lock
+.vscode
+.idea
+
+.env
+build
+
+#.pnp.*
