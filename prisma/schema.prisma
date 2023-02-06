@@ -11,16 +11,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  email     String   @unique
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  email     String    @unique
   password  String
   firstName String
   lastName  String
+  verified  Boolean   @default(false)
+  lastLogin DateTime?
   image     String?
-  isAdmin   Boolean  @default(false)
-  roles     ROLE[]   @default([CONSUMER])
+  isAdmin   Boolean   @default(false)
+  roles     ROLE[]    @default([CONSUMER])
   tokens    Token[]
 }
 
@@ -33,6 +35,8 @@ model Token {
   value     String
   expiry    DateTime
   category  TOKEN_CATEGORY
+
+  @@unique([id, userId])
 }
 
 enum ROLE {

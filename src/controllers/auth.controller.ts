@@ -2,6 +2,7 @@ import prisma from '../config/database';
 import {
   comparePassword,
   createJwt,
+  generateRandomString,
   hashPassword,
 } from '../modules/auth.module';
 
@@ -10,11 +11,25 @@ export const createUser = async (req, res) => {
   const user = await prisma.user.create({
     data: {
       email: req.body.email.toLowerCase().trim(),
-      name: req.body.name,
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
       password: hashedPassword,
     },
   });
-  res.status(201).json({ success: true, data: user });
+  const today = new Date();
+
+  const token = await prisma.token.create({
+    data: {
+      userId: user.id,
+      value: generateRandomString(128),
+      expiry: new Date(today.setDate(new Date().getDate() + 7)),
+      category: 'SIGNUP',
+    },
+  });
+
+  // TODO: Send email to set password.
+
+  res.status(201).json({ success: true, data: { user, token: token.value } });
 };
 
 export const signIn = async (req, res) => {
