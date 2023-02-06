@@ -8,6 +8,7 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import { authRouter, userRouter } from './routes';
 
 const app: Application = express();
 
@@ -17,12 +18,17 @@ app.use(morgan('dev'));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/user', userRouter);
+
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Auth Service up!!' });
 });
 
 app.all('*', (req, res) => {
-  res.status(404).json({ message: `Route ${req.originalUrl} not found` });
+  res.status(404).json({
+    message: `Route ${req.originalUrl} not found`,
+  });
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

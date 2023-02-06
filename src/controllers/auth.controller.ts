@@ -6,7 +6,7 @@ import {
   hashPassword,
 } from '../modules/auth.module';
 
-export const createUser = async (req, res) => {
+export const registerUser = async (req, res) => {
   const hashedPassword = await hashPassword(req.body.password);
   const user = await prisma.user.create({
     data: {
@@ -46,6 +46,16 @@ export const signIn = async (req, res) => {
       return;
     }
   }
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      lastLogin: new Date(),
+    },
+  });
+
   res
     .status(401)
     .send({ success: true, detail: 'Invalid username or password' });

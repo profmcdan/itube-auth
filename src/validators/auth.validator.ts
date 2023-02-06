@@ -13,3 +13,8 @@ export const registerUserValidator = [
   body('image').optional().isString(),
   body('roles').optional().isIn(['CONSUMER', 'CREATOR']).isString(),
 ];
+
+export const updateUserValidator = [
+  body('firstName').optional().isString().withMessage('firstName is required'),
+  body('lastName').optional().isString().withMessage('lastName is required'),
+];
