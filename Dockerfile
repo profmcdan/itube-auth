@@ -1,15 +1,18 @@
-FROM node:18-alpine
-USER node
+FROM node:18
+WORKDIR /usr
 
-WORKDIR /app
-RUN npm install yarn
+RUN corepack enable
+RUN corepack prepare yarn@stable --activate
 
-COPY --chown=node ./package.json ./
-COPY --chown=node . ./
+COPY package.json ./
+COPY tsconfig.json ./
+COPY prisma ./prisma
+COPY src ./src
 
-RUN yarn install && yarn cache clean
-RUN yarn prisma:migrate
+RUN npm install
 
-EXPOSE 10001
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-CMD ["yarn,", "start:dev"]
+EXPOSE 8000
+ENTRYPOINT [ "/entrypoint.sh" ]
