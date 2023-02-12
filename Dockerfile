@@ -1,18 +1,29 @@
-FROM node:18
-WORKDIR /usr
+FROM node:18-alpine AS base
+# RUN apt-get update && apt-get install libssl-dev ca-certificates -y
+WORKDIR /app
 
-RUN corepack enable
-RUN corepack prepare yarn@stable --activate
+COPY package.json yarn.lock ./
 
-COPY package.json ./
-COPY tsconfig.json ./
-COPY prisma ./prisma
-COPY src ./src
+FROM base as builder
+RUN export NODE_ENV=production
+RUN yarn
 
-RUN npm install
+COPY . .
+RUN yarn run prisma:generate
+RUN yarn build
 
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+FROM base as prod-builder
 
-EXPOSE 8000
-ENTRYPOINT [ "/entrypoint.sh" ]
+RUN yarn install --production
+COPY prisma prisma
+RUN yarn run prisma:generate
+RUN cp -R node_modules prod_node_modules
+
+FROM base as prod
+
+COPY --from=prod-builder /app/prod_node_modules /app/node_modules
+COPY --from=builder  /app/dist /app/dist
+COPY --from=builder  /app/prisma /app/prisma
+
+EXPOSE 80
+CMD ["yarn", "start"]
